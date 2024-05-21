@@ -19,15 +19,21 @@ def pick_up_ball():
     min_val_red = 35
     max_val_red = 137
 
-    min_val_yellow = 58
-    max_val_yellow = 44
+    min_val_yellow = 67
+    max_val_yellow = 87
 
     
 
     
 
 
-    kernel = np.ones((3,3),np.uint8)
+    kernel = np.array([[0,0,1,1,1,0,0],
+                        [0,1,1,1,1,1,0],
+                        [1,1,1,1,1,1,1],
+                        [1,1,1,1,1,1,1],
+                        [1,1,1,1,1,1,1],
+                        [0,1,1,1,1,1,0],
+                        [0,0,1,1,1,0,0]],dtype=np.uint8)
 
     while True:
         ret,img = cap.read()
@@ -44,8 +50,8 @@ def pick_up_ball():
 
         #yellow
         hsv_yellow = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_yellow = np.array([17, 30, 63])
-        upper_yellow = np.array([71, 200, 255])
+        lower_yellow = np.array([17, 64, 106])
+        upper_yellow = np.array([71, 193, 255])
         img_mask_yellow = cv2.inRange(hsv_yellow, lower_yellow, upper_yellow)
         img_color_yellow = cv2.bitwise_and(img, img, mask=img_mask_yellow)
 
@@ -78,7 +84,6 @@ def pick_up_ball():
        
 
         #cimg2 = img_color_blue
-        cimg3 = img_color_yellow
         #cimg4 = img_color_red
 
 
@@ -94,18 +99,23 @@ def pick_up_ball():
         img_color_red = cv2.morphologyEx(img_color_red, cv2.MORPH_OPEN, kernel)
         img_color_red = cv2.morphologyEx(img_color_red, cv2.MORPH_CLOSE, kernel)
 
+        cimg2 = img_color_blue
 
         img_color_red = cv2.Canny(img_color_red, min_val_red, max_val_red)
+        img_color_yellow = cv2.bilateralFilter(img_color_yellow, 20, 0, 0)
         img_color_yellow = cv2.Canny(img_color_yellow, min_val_yellow, max_val_yellow)
+        img_color_yellow = cv2.bitwise_not(img_color_yellow)
         img_color_blue = cv2.Canny(img_color_blue, min_val_blue, max_val_blue) #ok
 
+        cimg3 = img_color_yellow
 
 
 
 
-        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,20,param1= 80, param2=18,minRadius=0,maxRadius=50) #ok
-        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,20,param1=80,param2=20,minRadius=0,maxRadius=30)
-        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,20,param1=80,param2=18,minRadius=0,maxRadius=50)
+
+        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,20,param1= 80, param2=18,minRadius=10,maxRadius=50) #ok
+        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,15,param1=75,param2=20,minRadius=10,maxRadius=50)
+        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,20,param1=80,param2=18,minRadius=10,maxRadius=50)
         if circles1 is not None:
             circles1 = np.uint16(np.around(circles1))
             for i in circles1[0, :]:
@@ -128,7 +138,7 @@ def pick_up_ball():
             print("nothing")
 
         cv2.imshow('orizin',cimg1)
-        #cv2.imshow('blue',cimg2)
+        cv2.imshow('blue',cimg2)
         cv2.imshow('yellow', cimg3)
         #cv2.imshow('red', cimg4)
 
