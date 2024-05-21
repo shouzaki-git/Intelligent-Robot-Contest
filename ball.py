@@ -19,8 +19,8 @@ def pick_up_ball():
     min_val_red = 35
     max_val_red = 137
 
-    min_val_yellow = 58
-    max_val_yellow = 44
+    min_val_yellow = 40
+    max_val_yellow = 50
 
     
 
@@ -44,16 +44,16 @@ def pick_up_ball():
 
         #yellow
         hsv_yellow = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_yellow = np.array([17, 30, 63])
-        upper_yellow = np.array([71, 200, 255])
+        lower_yellow = np.array([0, 57, 140])
+        upper_yellow = np.array([52, 196, 255])
         img_mask_yellow = cv2.inRange(hsv_yellow, lower_yellow, upper_yellow)
         img_color_yellow = cv2.bitwise_and(img, img, mask=img_mask_yellow)
 
         #red
         hsv_red = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_red1 = np.array([0, 114, 59])
+        lower_red1 = np.array([0, 65, 79])
         upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([150, 99, 92])
+        lower_red2 = np.array([150, 73, 84])
         upper_red2 = np.array([180, 255, 255])
         img_mask_red1 = cv2.inRange(hsv_red, lower_red1, upper_red1)
         img_mask_red2 = cv2.inRange(hsv_red, lower_red2, upper_red2)
@@ -103,9 +103,9 @@ def pick_up_ball():
 
 
 
-        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,20,param1= 80, param2=18,minRadius=0,maxRadius=50) #ok
-        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,20,param1=80,param2=20,minRadius=0,maxRadius=30)
-        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,20,param1=80,param2=18,minRadius=0,maxRadius=50)
+        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,10,param1= 80, param2=18,minRadius= 10,maxRadius=30) #ok
+        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,10,param1=80,param2=18,minRadius= 10,maxRadius=30)
+        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,10,param1=80,param2=18,minRadius= 10,maxRadius=30)
         if circles1 is not None:
             circles1 = np.uint16(np.around(circles1))
             for i in circles1[0, :]:
