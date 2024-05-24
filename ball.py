@@ -19,15 +19,15 @@ def pick_up_ball():
     min_val_red = 35
     max_val_red = 137
 
-    min_val_yellow = 40
-    max_val_yellow = 50
+    min_val_yellow = 43
+    max_val_yellow = 41
 
     
 
     
 
 
-    kernel = np.ones((3,3),np.uint8)
+    kernel = np.ones((7,7),np.uint8)
 
     while True:
         ret,img = cap.read()
@@ -44,16 +44,16 @@ def pick_up_ball():
 
         #yellow
         hsv_yellow = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_yellow = np.array([0, 57, 140])
-        upper_yellow = np.array([52, 196, 255])
+        lower_yellow = np.array([21, 30, 134])
+        upper_yellow = np.array([48, 159, 255])
         img_mask_yellow = cv2.inRange(hsv_yellow, lower_yellow, upper_yellow)
         img_color_yellow = cv2.bitwise_and(img, img, mask=img_mask_yellow)
 
         #red
         hsv_red = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
-        lower_red1 = np.array([0, 65, 79])
+        lower_red1 = np.array([0, 114, 59])
         upper_red1 = np.array([10, 255, 255])
-        lower_red2 = np.array([150, 73, 84])
+        lower_red2 = np.array([150, 71, 68])
         upper_red2 = np.array([180, 255, 255])
         img_mask_red1 = cv2.inRange(hsv_red, lower_red1, upper_red1)
         img_mask_red2 = cv2.inRange(hsv_red, lower_red2, upper_red2)
@@ -77,9 +77,8 @@ def pick_up_ball():
         
        
 
-        #cimg2 = img_color_blue
-        cimg3 = img_color_yellow
-        #cimg4 = img_color_red
+        cimg2 = img_color_blue
+        cimg4 = img_color_red
 
 
         img_color_blue = cv2.cvtColor(img_color_blue, cv2.COLOR_RGB2GRAY)
@@ -97,15 +96,28 @@ def pick_up_ball():
 
         img_color_red = cv2.Canny(img_color_red, min_val_red, max_val_red)
         img_color_yellow = cv2.Canny(img_color_yellow, min_val_yellow, max_val_yellow)
+        cimg3 = img_color_yellow
+
         img_color_blue = cv2.Canny(img_color_blue, min_val_blue, max_val_blue) #ok
 
+        #lines = cv2.HoughLinesP(img_color_yellow, rho=1, theta=np.pi/360, threshold=25, minLineLength=10, maxLineGap=5)
+
+        #f lines is not None:
+         #   for line in lines:
+          #      x1, y1, x2, y2 = line[0]
+           #    cv2.line(cimg1, (x1, y1), (x2, y2), (0, 255, 0), 2)
+            #:
+            #print("nothing")
+        
 
 
 
 
-        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,10,param1= 80, param2=18,minRadius= 10,maxRadius=30) #ok
-        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,10,param1=80,param2=18,minRadius= 10,maxRadius=30)
-        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,10,param1=80,param2=18,minRadius= 10,maxRadius=30)
+
+
+        circles1 = cv2.HoughCircles(img_color_blue,cv2.HOUGH_GRADIENT,1,10,param1= 80, param2=18,minRadius=10,maxRadius=20) #ok
+        circles2 = cv2.HoughCircles(img_color_yellow,cv2.HOUGH_GRADIENT,1,10,param1=75,param2=18,minRadius=10,maxRadius=20)
+        circles3 = cv2.HoughCircles(img_color_red,cv2.HOUGH_GRADIENT,1,10,param1=80,param2=18,minRadius=10,maxRadius=20)
         if circles1 is not None:
             circles1 = np.uint16(np.around(circles1))
             for i in circles1[0, :]:
@@ -122,15 +134,15 @@ def pick_up_ball():
             circles3 = np.uint16(np.around(circles3))
             for k in circles3[0, :]:
                 cv2.circle(cimg1, (k[0], k[1]), k[2], (255, 255, 0), 2)
-                cv2.circle(cimg1, (k[0], k[1]), 2, (0, 0, 255), 3)
+                cv2.circle(cimg3, (k[0], k[1]), 2, (0, 0, 255), 3)
 
         else:
             print("nothing")
 
         cv2.imshow('orizin',cimg1)
-        #cv2.imshow('blue',cimg2)
+        cv2.imshow('blue',cimg2)
         cv2.imshow('yellow', cimg3)
-        #cv2.imshow('red', cimg4)
+        cv2.imshow('red', cimg4)
 
 
         k = cv2.waitKey(10)
