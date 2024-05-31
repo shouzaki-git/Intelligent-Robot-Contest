@@ -29,6 +29,9 @@ def calculate_auto_thresholds(gray):
 
     return lower_threshold, upper_threshold
 
+    lower_threshold = 35
+    upper_threshold = 135
+
 def main():
     # Webカメラを起動
     cap = cv2.VideoCapture(0)  # デフォルトのカメラを使用
@@ -53,12 +56,16 @@ def main():
     # 閾値の自動初期値を計算
     lower_threshold, upper_threshold = calculate_auto_thresholds(gray)
 
+    lower_threshold = 35
+    upper_threshold = 135
+
+
     # トラックバーの作成
     cv2.createTrackbar("Lower Threshold", "Edges", lower_threshold, 255, on_trackbar)
     cv2.createTrackbar("Upper Threshold", "Edges", upper_threshold, 255, on_trackbar)
 
     # カーネルの作成
-    kernel_size = 3
+    kernel_size = 7
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
 
     while True:
